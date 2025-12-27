@@ -5,6 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Deal;
+use App\Repository\DealRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 class DealController extends AbstractController
@@ -17,8 +18,10 @@ class DealController extends AbstractController
     }
     
     #[Route('/deal/list', name: 'deal_list', methods: ['GET'])]
-    public function indexAction()
+    public function indexAction(DealRepository $dealRepository)
     {
+        $deals = $dealRepository->listDeals();
+        DD($deals);
         $response = new Response("<h1>Liste De Deals</h1>");
         return $response;
     }
@@ -38,4 +41,21 @@ class DealController extends AbstractController
         );
     }
 
+    #[Route('/deal/toggle/{id}', name: 'deal_toggle', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function toggleDealAction($id, ManagerRegistry $manager)
+    {
+        $deal = $manager->getRepository(Deal::class)->find($id);
+        if (!$deal) {
+            throw $this->createNotFoundException(
+                'No deal found for id ' . $id
+            );
+        }
+        $deal->setEnable(!$deal->isEnable());
+        $entityManager = $manager->getManager();
+        $entityManager->persist($deal);
+        $entityManager->flush();
+
+        //dd($deal);
+        return new Response('Deal with id ' . $id . ' has been toggled to ' . ($deal->isEnable() ? 'enabled' : 'disabled') . '.');
+    }
 }

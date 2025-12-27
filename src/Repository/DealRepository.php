@@ -19,25 +19,13 @@ class DealRepository extends ServiceEntityRepository
     /**
      * @return Deal[] Returns an array of Deal objects
      */
-    public function findAll(): array
-    {
-        return $this->createQueryBuilder('d')
-            /* ->andWhere('d.id = :id')
-            ->setParameter('id', $id)
-            ->orderBy('d.id', 'ASC')
-            ->setMaxResults(10)
-             */->getQuery()
-           ->getResult()
-       ;
-    }
 
-    public function findOneBySomeField($value): ?Deal
-    {
-        return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
+    public function listDeals() : array{
+        return $this->createQueryBuilder('deal')
+            ->andWhere('deal.enable = :valeur')
+            ->setParameter('valeur',true)
+            ->orderBy('deal.create_at','DESC')
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
 }
