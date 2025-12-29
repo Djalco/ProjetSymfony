@@ -5,6 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Deal;
+use App\Repository\CategoryRepository;
 use App\Repository\DealRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,12 +19,23 @@ class DealController extends AbstractController
     }
     
     #[Route('/deal/list', name: 'deal_list', methods: ['GET'])]
-    public function indexAction(DealRepository $dealRepository)
+    public function dealListAction(DealRepository $dealRepository)
     {
         $deals = $dealRepository->listDeals();
-        DD($deals);
-        $response = new Response("<h1>Liste De Deals</h1>");
-        return $response;
+        //DD($deals);
+        return $this->render('deal/index.html.twig', [
+            'deals' => $deals,
+        ]);
+    }
+
+    #[Route('/category/list', name: 'category_list', methods: ['GET'])]
+    public function categoryListAction(CategoryRepository $categoryRepository)
+    {
+        $categories = $categoryRepository->findAll();
+        //DD($categories);
+        return $this->render('category/index.html.twig', [
+            'categories' => $categories,
+        ]);
     }
 
     #[Route('/deal/show/{dealId}', name: 'deal_show', methods: ['GET'], requirements: ['dealId' => '\d+'])]

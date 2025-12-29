@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{site.name}} {% endblock %}
+{% block body %}
+    <h1>Liste des Catégories</h1>
+
+        {% for category in categories %}
+            
+                {{ category.name }}
+            
+            {% for deal in category.deals %}
+                <ul>
+                    <li>
+                       <a href="{{ path('deal_show', {'dealId': deal.id}) }}"> {{ deal.name }} </a> - {{ deal.price }} - {{ deal.createAt ? deal.createAt|date('m/d/Y') : '' }}
+                    </li>
+                </ul>
+            {% endfor %}
+        {% endfor %}
+{% endblock %}
