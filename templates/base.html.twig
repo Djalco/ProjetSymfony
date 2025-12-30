@@ -12,6 +12,18 @@
         {% endblock %}
     </head>
     <body>
+        {% if  is_granted('IS_AUTHENTICATED_FULLY') %}
+                <a href="{{path('app_logout')}}"> Deconnexion</a>
+                {% if  is_granted('ROLE_ADMIN') %}
+                    <h1>{{app.user.username}}</h1>
+                    <a href="{{path('admin')}}"> DashBoard</a>
+                {% else %}
+                    <h1>{{app.user.username}}</h1>
+                {% endif %}
+            {% else %}
+
+                <a href="{{path('app_register')}}"> Connectez-Vous</a>
+            {% endif %}
         {% block body %}{% endblock %}
     </body>
 </html>

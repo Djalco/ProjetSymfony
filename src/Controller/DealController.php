@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DealController extends AbstractController
 {
-    #[Route('/', name: 'homepage', methods: ['GET'])]
+    #[Route('/home', name: 'homepage', methods: ['GET'])]
     public function homeAction()
     {
         $response = new Response("<h1>Bienvenue a vous</h1>");
