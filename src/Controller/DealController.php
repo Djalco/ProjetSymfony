@@ -8,9 +8,11 @@ use App\Entity\Deal;
 use App\Form\DealType;
 use App\Repository\CategoryRepository;
 use App\Repository\DealRepository;
+use App\Service\RandomDiscount;
+use App\Service\RandomSlogan;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use SebastianBergmann\Environment\Console;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class DealController extends AbstractController
@@ -23,16 +25,19 @@ class DealController extends AbstractController
     }
     
     #[Route('/deal/list', name: 'deal_list', methods: ['GET'])]
-    public function dealListAction(DealRepository $dealRepository)
+    public function dealListAction(DealRepository $dealRepository, RandomSlogan  $randomSlogan, RandomDiscount $randomDiscount)
     {
         $deals = $dealRepository->listDeals();
         //DD($deals);
         return $this->render('deal/index.html.twig', [
             'deals' => $deals,
+            'slogan' => $randomSlogan->getSlogan(),
+            'discount' => $randomDiscount->getRandomDiscount(),
+
         ]);
     }
     #[Route('/deal/new', name: 'deal_create', methods: ['GET', 'POST'])]
-    public function dealCreateAction(Request $request, EntityManagerInterface $manager)
+    public function dealCreateAction(Request $request, EntityManagerInterface $manager, LoggerInterface $logger)
     {   
         $deal = new Deal();
         $form = $this->createForm(DealType::class, $deal);
@@ -42,7 +47,7 @@ class DealController extends AbstractController
             $deal->setEnable(true);
             $manager->persist($deal);
             $manager->flush();
-            $this->addFlash('success', 'Deal created successfully!');
+            $logger->info('Deal created successfully!', ['dealId' => $deal->getId()]);
 
             return $this->redirectToRoute('deal_list');
         }
