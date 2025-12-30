@@ -5,9 +5,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Deal;
+use App\Form\DealType;
 use App\Repository\CategoryRepository;
 use App\Repository\DealRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use SebastianBergmann\Environment\Console;
+use Symfony\Component\HttpFoundation\Request;
 
 class DealController extends AbstractController
 {
@@ -27,14 +31,23 @@ class DealController extends AbstractController
             'deals' => $deals,
         ]);
     }
+    #[Route('/deal/new', name: 'deal_create', methods: ['GET', 'POST'])]
+    public function dealCreateAction(Request $request, EntityManagerInterface $manager)
+    {   
+        $deal = new Deal();
+        $form = $this->createForm(DealType::class, $deal);
+        $form->handleRequest($request);
 
-    #[Route('/category/list', name: 'category_list', methods: ['GET'])]
-    public function categoryListAction(CategoryRepository $categoryRepository)
-    {
-        $categories = $categoryRepository->findAll();
-        //DD($categories);
-        return $this->render('category/index.html.twig', [
-            'categories' => $categories,
+        if ($form->isSubmitted() && $form->isValid()) {
+            $deal->setEnable(true);
+            $manager->persist($deal);
+            $manager->flush();
+            $this->addFlash('success', 'Deal created successfully!');
+
+            return $this->redirectToRoute('deal_list');
+        }
+        return $this->render('deal/formulaire.html.twig',[
+            'form' => $form->createView(),
         ]);
     }
 
@@ -69,5 +82,15 @@ class DealController extends AbstractController
 
         //dd($deal);
         return new Response('Deal with id ' . $id . ' has been toggled to ' . ($deal->isEnable() ? 'enabled' : 'disabled') . '.');
+    }
+
+    #[Route('/category/list', name: 'category_list', methods: ['GET'])]
+    public function categoryListAction(CategoryRepository $categoryRepository)
+    {
+        $categories = $categoryRepository->findAll();
+        //DD($categories);
+        return $this->render('category/index.html.twig', [
+            'categories' => $categories,
+        ]);
     }
 }

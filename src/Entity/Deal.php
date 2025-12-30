@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: DealRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -30,6 +32,7 @@ class Deal
     private ?\DateTimeImmutable $update_at = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(value: 0)]
     private ?float $price = null;
 
     #[ORM\Column]
@@ -80,18 +83,18 @@ class Deal
         return $this->create_at;
     }
 
-    #[ORM\PrePersist]
-    public function setCreateAtValue(): void
+    public function setCreateAt(\DateTimeImmutable $create_at): static
     {
-        // S'exécute uniquement à la création
-        $this->create_at = new \DateTimeImmutable();
+        $this->create_at = $create_at;
+
+        return $this;
     }
 
-    #[ORM\PreUpdate]
-    public function setUpdateAtValue(): void
+    public function setUpdateAt(\DateTimeImmutable $update_at): static
     {
-        // S'exécute à chaque modification (flush)
-        $this->update_at = new \DateTimeImmutable();
+        $this->update_at = $update_at;
+
+        return $this;
     }
 
     public function getUpdateAt(): ?\DateTimeImmutable
@@ -150,6 +153,21 @@ class Deal
 
     public function __toString(): string
     {
-        return $this->name;
+        return $this->name ?? '';
+    }
+
+    #[ORM\PrePersist] // <--- NOUVEAU : Exécuté juste avant l'insertion
+    #[ORM\PreUpdate] // <--- NOUVEAU : Exécuté juste avant la mise à jour
+    public function updateTimestamps(): void
+    {
+        $now = new \DateTimeImmutable();
+
+        // Si l'objet n'a pas encore de date de création, c'est une insertion
+        if ($this->create_at === null) {
+            $this->create_at = $now;
+        }
+
+        // Met à jour la date de modification à chaque persistance
+        $this->update_at = $now;
     }
 }

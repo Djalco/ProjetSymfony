@@ -1,0 +1,17 @@
+{% extends 'base.html.twig'%}
+{% block title %}Créer un Deal{% endblock %}
+{% form_theme form 'bootstrap_5_horizontal_layout.html.twig' %}
+
+{% block body %}
+    <h1>Créer un Deal</h1>
+
+{{ form_start(form) }}
+
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.price) }}
+        {{ form_row(form.categories) }}
+        {{ form_row(form.Save) }}
+
+    {{ form_end(form) }}
+{% endblock %}

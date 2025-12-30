@@ -2,6 +2,7 @@ twig:
     globals:
         site:
             name: '%sitename%'
+        form_themes: ['bootstrap_5_horizontal_layout.html.twig']
 
 when@test:
     twig:
