@@ -8,7 +8,6 @@ use App\Entity\Deal;
 use App\Form\DealType;
 use App\Repository\CategoryRepository;
 use App\Repository\DealRepository;
-use App\Security\Voter\DealVoter;
 use App\Service\RandomDiscount;
 use App\Service\RandomSlogan;
 use Doctrine\ORM\EntityManagerInterface;
