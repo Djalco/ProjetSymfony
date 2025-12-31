@@ -8,6 +8,7 @@ use App\Entity\Deal;
 use App\Form\DealType;
 use App\Repository\CategoryRepository;
 use App\Repository\DealRepository;
+use App\Security\Voter\DealVoter;
 use App\Service\RandomDiscount;
 use App\Service\RandomSlogan;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,9 +29,18 @@ class DealController extends AbstractController
     public function dealListAction(DealRepository $dealRepository, RandomSlogan  $randomSlogan, RandomDiscount $randomDiscount)
     {
         $deals = $dealRepository->listDeals();
+        $visibleDeals = [];
+
+        // On parcourt chaque deal pour vérifier les droits individuellement
+        foreach ($deals as $deal) {
+            // isGranted renvoie un booléen sans bloquer la page
+            if ($this->isGranted('DEAL_VIEW', $deal)) {
+                $visibleDeals[] = $deal;
+            }
+        }
         //DD($deals);
         return $this->render('deal/index.html.twig', [
-            'deals' => $deals,
+            'deals' => $visibleDeals,
             'slogan' => $randomSlogan->getSlogan(),
             'discount' => $randomDiscount->getRandomDiscount(),
 

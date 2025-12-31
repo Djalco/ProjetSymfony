@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} {{site.name}} {% endblock %}
+{% block title %} {{ site.name }} {% endblock %}
 
 {% block body %}
     <h1>Liste des Deals</h1>
@@ -16,24 +16,41 @@
             </tr>
         </thead>
         <tbody>
+        {# On utilise une variable pour savoir si on a affiché au moins un deal #}
+        {% set hasVisibleDeal = false %}
+        
         {% for deal in deals %}
+            {% if is_granted('DEAL_VIEW', deal) %}
+                {% set hasVisibleDeal = true %}
+                <tr>
+                    <td>{{ deal.id }}</td>
+                    <td>{{ deal.name }}</td>
+                    <td>{{ deal.description }}</td>
+                    <td>{{ deal.price }} €</td>
+                    <td>{{ deal.createAt ? deal.createAt|date('d/m/Y') : 'N/A' }}</td>
+                    
+                </tr>
+            {% endif %}
+        {% else %}
             <tr>
-                <td>{{ deal.id }}</td>
-                <td>{{ deal.name }}</td>
-                <td>{{ deal.description }}</td>
-                <td>{{ deal.price }}</td>
-                <td>{{ deal.createAt ? deal.createAt|date('m/d/Y') : '' }}</td>
-                {# <td>
-                    <a href="{{ path('deal_show', {'dealId': deal.id}) }}">View</a>
-                </td> #}
+                <td colspan="6">Aucun deal n'existe en base de données.</td>
             </tr>
-        {# {% else %}
-            <tr>
-                <td colspan="5">No deals found</td>
-            </tr> #}
         {% endfor %}
+
+        {# Message si des deals existent mais qu'aucun n'est accessible #}
+        {% if deals is not empty and not hasVisibleDeal %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <em>Vous n'avez pas les permissions pour voir les deals premium.</em>
+                </td>
+            </tr>
+        {% endif %}
         </tbody>
     </table>
-    <h2>{{ slogan }}</h2>
-    <h3>Your special discount is: {{ discount }}%</h3>
+
+    <hr>
+    <div class="alert alert-secondary">
+        <h2>{{ slogan }}</h2>
+        <h3>Your special discount is: <strong>{{ discount }}%</strong></h3>
+    </div>
 {% endblock %}
