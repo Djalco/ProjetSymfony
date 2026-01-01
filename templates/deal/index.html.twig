@@ -23,7 +23,8 @@
             {% if is_granted('DEAL_VIEW', deal) %}
                 {% set hasVisibleDeal = true %}
                 <tr>
-                    <td>{{ deal.id }}</td>
+                    <td>{{ component('DealComponent', {id: deal.id}) }}</td>
+                    
                     <td>{{ deal.name }}</td>
                     <td>{{ deal.description }}</td>
                     <td>{{ deal.price }} €</td>
