@@ -5,6 +5,42 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
+            <style>
+                .deal-counter {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    font-family: Arial, sans-serif;
+                    z-index: 1000;
+                }
+                .deal-counter-label {
+                    font-size: 14px;
+                    margin-bottom: 5px;
+                }
+                .deal-counter-value {
+                    font-size: 32px;
+                    font-weight: bold;
+                    transition: opacity 0.3s ease;
+                }
+                .deal-counter-refresh {
+                    margin-top: 10px;
+                    background-color: rgba(255,255,255,0.2);
+                    border: none;
+                    color: white;
+                    padding: 5px 15px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                }
+                .deal-counter-refresh:hover {
+                    background-color: rgba(255,255,255,0.3);
+                }
+            </style>
         {% endblock %}
 
         {% block javascripts %}
@@ -12,6 +48,14 @@
         {% endblock %}
     </head>
     <body>
+        <div class="deal-counter" data-controller="deal-counter" data-deal-counter-refresh-interval-value="30000">
+            <div class="deal-counter-label">Nombre de deals</div>
+            <div class="deal-counter-value" data-deal-counter-target="count">-</div>
+            <button class="deal-counter-refresh" data-action="click->deal-counter#refresh">
+                🔄 Rafraîchir
+            </button>
+        </div>
+
         {% if  is_granted('IS_AUTHENTICATED_FULLY') %}
                 <a href="{{path('app_logout')}}"> Deconnexion</a>
                 {% if  is_granted('ROLE_ADMIN') %}

@@ -37,11 +37,15 @@ class DealController extends AbstractController
                 $visibleDeals[] = $deal;
             }
         }
+        $count = $dealRepository->count([]);
+        //return $this->json(['count' => $count]);
+
         //DD($deals);
         return $this->render('deal/index.html.twig', [
             'deals' => $visibleDeals,
             'slogan' => $randomSlogan->getSlogan(),
             'discount' => $randomDiscount->getRandomDiscount(),
+            'count' => $count,
 
         ]);
     }
@@ -106,5 +110,12 @@ class DealController extends AbstractController
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
         ]);
+    }
+
+    #[Route('/api/deals/count', name: 'api_deals_count', methods: ['GET'])]
+    public function countDeals(DealRepository $dealRepository): Response
+    {
+        $count = $dealRepository->count([]);
+        return $this->json(['count' => $count]);
     }
 }

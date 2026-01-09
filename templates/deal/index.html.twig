@@ -28,7 +28,8 @@
                     <td>{{ deal.name }}</td>
                     <td>{{ deal.description }}</td>
                     <td>{{ deal.price }} €</td>
-                    <td>{{ deal.createAt ? deal.createAt|date('d/m/Y') : 'N/A' }}</td>
+                    {# <td>{{ deal.createAt ? deal.createAt|date('d/m/Y') : 'N/A' }}</td> #}
+                    <td>{{ deal.createAt|date('d/m/Y') }}</td>
                     
                 </tr>
             {% endif %}
